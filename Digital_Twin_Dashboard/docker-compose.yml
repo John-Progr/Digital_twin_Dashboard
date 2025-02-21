@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  # React app service
+  app:
+    build: .
+    ports:
+      - "80:80"  # Expose React app on port 80
+    container_name: react_app
+    restart: always
+    depends_on:
+      - grafana  # Ensure Grafana is started before the app (optional)
+
+  # Grafana service
+  grafana:
+    image: grafana/grafana:latest  # Use the official Grafana Docker image
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true  # Enable embedding in Grafana
+      - GF_AUTH_ANONYMOUS_ENABLED=true  # Enable anonymous access to Grafana  # Set admin password for Grafana
+    ports:
+      - "3000:3000"  # Expose Grafana on port 3000
+    volumes:
+      - grafana_data:/var/lib/grafana  # Persist Grafana data to avoid data loss on container restart
+    restart: always
+
+volumes:
+  grafana_data:
+    driver: local
